@@ -26,7 +26,7 @@ const init = () => {
             'View a department, role, or an employee',
             'Update an employee role',
             'Delete a department, role or an employee',
-            'Exit the Application!',
+            'Exit the Application!'
         ],
     })
     .then (response => {
@@ -53,47 +53,6 @@ const init = () => {
     });
 };
 
-// Prompts the user to add the entity of their choice
-const addEntity = () => {
-    inquirer.prompt({
-        name: 'option',
-        type: 'rawlist',
-        message: 'Enter an entity to add:',
-        choices: [
-            'Department',
-            'Employee Role',
-            'Employee',
-            'Return to previous prompts!',
-        ],
-    })
-    .then(response => {
-        switch (response.option) {
-            case 'Department':
-                addDepartment();
-                break;
-            case 'Employee Role':
-                addEmployeeRole();
-                break;
-            case 'Employee':
-                addEmployee();
-                break;
-            case 'Return to previous prompts!':
-                init();
-                break;
-            default: 
-            console.log(`Invalid optiion ${response.option}`);
-            break;
-        }
-    });
-};
-
-// Add Department
-// Add Employee Role
-// Add Employee
-
-
-
-
 // Prompts the user to view the entity of their choice
 const viewEntity = () => {
     inquirer.prompt({
@@ -104,7 +63,7 @@ const viewEntity = () => {
             'Departments',
             'Employee Roles',
             'Employees',
-            'Return to previous prompts!',
+            'Return to previous prompts!'
         ],
     })
     .then(response => {
@@ -129,8 +88,161 @@ const viewEntity = () => {
 };
 
 /// View Departments
+const viewDepartments = () => {
+    const query = 'SELECT * FROM department';
+    connection.query(query, (err, data) => {
+        if (err) throw err;
+        console.table(data);
+        viewEntity();
+    });
+};
+
 // View Employee Roles
+const viewEmployeeRoles = () => {
+    const query = 'SELECT * FROM role';
+    connection.query(query, (err, data) => {
+        if (err) throw err;
+        console.table(data);
+        viewEntity();
+    });
+};
+
 // View Employees
+const viewEmployees = () => {
+    const query = 'SELECT * FROM employee';
+    connection.query(query, (err, data) => {
+        if (err) throw err;
+        console.table(data);
+        viewEntity();
+    });
+};
+
+// Prompts the user to add the entity of their choice
+const addEntity = () => {
+    inquirer.prompt({
+        name: 'option',
+        type: 'rawlist',
+        message: 'Enter an entity to add:',
+        choices: [
+            'Department',
+            'Employee Role',
+            'Employee',
+            'Return to previous prompts!'
+        ],
+    })
+    .then(response => {
+        switch (response.option) {
+            case 'Department':
+                addDepartment();
+                break;
+            case 'Employee Role':
+                addEmployeeRole();
+                break;
+            case 'Employee':
+                addEmployee();
+                break;
+            case 'Return to previous prompts!':
+                init();
+                break;
+            default: 
+            console.log(`Invalid optiion ${response.option}`);
+            break;
+        }
+    });
+};
+
+// Add Department(s)
+const addDepartment = () => {
+    inquirer.prompt({
+        name: 'departmentName',
+        type: 'input',
+        message: 'Enter the department name you would like to add:'
+    })
+    .then(response => {
+        const query = 'INSERT INTO department SET ?';
+        connection.query(query, {name: response.departmentName}, (err, res) => {
+                if (err) throw err;
+                console.log(`Successfully department ${response.departmentName} has been added!`);
+                addEntity();
+            });
+    });
+};
+
+// Add Employee Role(s)
+const addEmployeeRole = () => {
+    inquirer.prompt([
+        {
+            name: 'title',
+            type: 'input',
+            message: 'Enter a title for this role:'
+        },
+        {
+            name: 'salary',
+            type: 'input',
+            message: 'Enter the salary for this role:'
+        },
+        {
+            name: 'departmentID',
+            type: 'input',
+            message: 'Enter the department_id for this role:'
+        }
+    ])
+    .then(response => {
+        const query = 'INSERT INTO role SET ?';
+        connection.query(query, 
+            {
+                title: response.title,
+                salary: response.salary,
+                department_id: response.departmentID
+            },
+            (err, res) => {
+                if (err) throw err;
+                console.log(`Successfully role title ${response.title} has been added!`);
+                addEntity();
+            });
+    });
+};
+
+// Add Employee(s)
+const addEmployee = () => {
+    inquirer.prompt([
+        {
+            name: 'firstName',
+            type: 'input',
+            message: 'Enter the firstName of an employee:'
+        },
+        {
+            name: 'lastName',
+            type: 'input',
+            message: 'Enter the lastName of an employee:'
+        },
+        {
+            name: 'roleID',
+            type: 'input',
+            message: 'Enter the role_id for this employee:'
+        },
+        {
+            name: 'managerID',
+            type: 'input',
+            message: 'Enter the manager_id for this employee, if there is one:'
+        }
+    ])
+    .then(response => {
+        const query = 'INSERT INTO employee SET ?';
+        connection.query(query, 
+            {
+                first_Name: response.firstName,
+                last_Name: response.lastName,
+                role_id: response.roleID,
+                manager_id: response.managerID
+            },
+            (err, res) => {
+                if (err) throw err;
+                console.log(`${response.firstName} ${response.lastName} successfully added as a new employee!`);
+                addEntity();
+            });
+    });
+};
 
 
 
@@ -148,7 +260,7 @@ const deleteEntity = () => {
             'Department',
             'Employee Role',
             'Employee',
-            'Return to previous prompts!',
+            'Return to previous prompts!'
         ],
     })
     .then(response => {
@@ -172,6 +284,22 @@ const deleteEntity = () => {
     });
 };
 
-/// Delete Departments
-// Delete Employee Roles
-// Delete Employees
+/// Delete Department(s)
+const deleteDepartment = () => {
+    inquirer.prompt({
+        name: 'departmentName',
+        type: 'input',
+        message: 'Enter the department name you would like to delete:'
+    })
+    .then(response => {
+        const query = `DELETE FROM department WHERE name = '${response.departmentName}'`;
+        connection.query(query, (err, res) => {
+            if (err) throw err;
+            console.log(`Successfully department ${response.departmentName} has been deleted!`);
+            deleteEntity();
+        });
+    });
+};
+
+// Delete Employee Role(s)
+// Delete Employee(s)
