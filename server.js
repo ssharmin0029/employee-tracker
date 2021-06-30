@@ -109,13 +109,28 @@ const viewEmployeeRoles = () => {
 
 // View Employees
 const viewEmployees = () => {
-    const query = 'SELECT * FROM employee';
+    const query = `SELECT employee.id, employee.first_name, employee.last_name, employee.role_id, role.title AS role_title, employee.manager_id,
+    CONCAT(manager.first_name,' ',manager.last_name) AS manager_name, department.name As department_name
+    FROM employee
+    LEFT JOIN role ON employee.role_id = role.id
+    LEFT JOIN department ON role.department_id = department.id
+    LEFT JOIN employee manager ON employee.manager_id = manager.id`;
     connection.query(query, (err, data) => {
         if (err) throw err;
         console.table(data);
         viewEntity();
     });
 };
+
+// const viewEmployees = () => {
+//     const query = 'SELECT * FROM employee';
+//     connection.query(query, (err, data) => {
+//         if (err) throw err;
+//         console.table(data);
+//         viewEntity();
+//     });
+// };
+
 
 // Prompts the user to add the entity of their choice
 const addEntity = () => {
@@ -228,6 +243,11 @@ const addEmployee = () => {
         }
     ])
     .then(response => {
+        if(response.managerID === "") {
+            response.managerID = null
+        } 
+       
+        console.log('This is the response:', response);
         const query = 'INSERT INTO employee SET ?';
         connection.query(query, 
             {
@@ -245,10 +265,62 @@ const addEmployee = () => {
 };
 
 
-
 // UPDATE EMPLOYEE ROLE
+// const updateEmployeeRole = () => {
+//     inquirer.prompt([
+//         {
+//             name: 'employeeID',
+//             type: 'list',
+//             message: 'Enter the employee_id of employee:'
+//         },
+//         {
+//             name: 'roleID',
+//             type: 'input',
+//             message: 'Enter the new role_id of the employee:'
+//         },
+//     ])
+//     .then(response => {
+//         const query = 'UPDATE employee SET ? WHERE ?';
+//         connection.query('UPDATE employee SET ? WHERE ?', 
+//             [
+//                 {role_id: response.roleID},
+//                 {id: response.employeeID},
+//             ], 
+//             (err, res) => {
+//             if (err) throw err;
+//             console.log('Employee role_id has been updated!');
+//             viewEntity();
+//         });
+//     });
+// };
 
-
+const updateEmployeeRole = () => {
+    inquirer.prompt([
+        {
+            name: 'employeeID',
+            type: 'list',
+            message: 'Enter the employee_id of employee:'
+        },
+        {
+            name: 'roleID',
+            type: 'input',
+            message: 'Enter the new role_id of the employee:'
+        },
+    ])
+    .then(response => {
+        const query = 'UPDATE employee SET employee.rold_id = ? WHERE employee.id = ?';
+        connection.query(query, 
+            [
+                {role_id: response.roleID},
+                {id: response.employeeID},
+            ], 
+            (err, res) => {
+            if (err) throw err;
+            console.log('Employee role_id has been updated!');
+            viewEntity();
+        });
+    });
+};
 
 // Prompts the user to delete the entity of their choice
 const deleteEntity = () => {
@@ -284,7 +356,8 @@ const deleteEntity = () => {
     });
 };
 
-/// Delete Department(s)
+// Delete Department(s)
+// Need account for ID and Update accordingly
 const deleteDepartment = () => {
     inquirer.prompt({
         name: 'departmentName',
@@ -302,4 +375,36 @@ const deleteDepartment = () => {
 };
 
 // Delete Employee Role(s)
+// Need account for ID and Update accordingly
+const deleteEmployeeRole = () => {
+    inquirer.prompt({
+        name: 'title',
+        type: 'input',
+        message: 'Enter the role-title you would like to delete:'
+    })
+    .then(response => {
+        const query = `DELETE FROM role WHERE title = '${response.title}'`;
+        connection.query(query, (err, res) => {
+            if (err) throw err;
+            console.log(`Successfully role ${response.title} has been deleted!`);
+            deleteEntity();
+        });
+    });
+};
+
 // Delete Employee(s)
+const deleteEmployee = () => {
+    inquirer.prompt({
+        name: 'employeeID',
+        type: 'input',
+        message: 'Enter the employee_id of the employee you would like to delete:'
+    })
+    .then(response => {
+        const query = `DELETE FROM employee WHERE id = '${response.employeeID}'`;
+        connection.query(query, (err, res) => {
+            if (err) throw err;
+            console.log(`Successfully employee_id ${response.employeeID} has been deleted!`);
+            deleteEntity();
+        });
+    });
+};
