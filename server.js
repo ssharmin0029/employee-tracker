@@ -122,16 +122,6 @@ const viewEmployees = () => {
     });
 };
 
-// const viewEmployees = () => {
-//     const query = 'SELECT * FROM employee';
-//     connection.query(query, (err, data) => {
-//         if (err) throw err;
-//         console.table(data);
-//         viewEntity();
-//     });
-// };
-
-
 // Prompts the user to add the entity of their choice
 const addEntity = () => {
     inquirer.prompt({
@@ -265,40 +255,12 @@ const addEmployee = () => {
 };
 
 
-// UPDATE EMPLOYEE ROLE
-// const updateEmployeeRole = () => {
-//     inquirer.prompt([
-//         {
-//             name: 'employeeID',
-//             type: 'list',
-//             message: 'Enter the employee_id of employee:'
-//         },
-//         {
-//             name: 'roleID',
-//             type: 'input',
-//             message: 'Enter the new role_id of the employee:'
-//         },
-//     ])
-//     .then(response => {
-//         const query = 'UPDATE employee SET ? WHERE ?';
-//         connection.query('UPDATE employee SET ? WHERE ?', 
-//             [
-//                 {role_id: response.roleID},
-//                 {id: response.employeeID},
-//             ], 
-//             (err, res) => {
-//             if (err) throw err;
-//             console.log('Employee role_id has been updated!');
-//             viewEntity();
-//         });
-//     });
-// };
-
+// Update Employee Role
 const updateEmployeeRole = () => {
     inquirer.prompt([
         {
             name: 'employeeID',
-            type: 'list',
+            type: 'input',
             message: 'Enter the employee_id of employee:'
         },
         {
@@ -308,13 +270,8 @@ const updateEmployeeRole = () => {
         },
     ])
     .then(response => {
-        const query = 'UPDATE employee SET employee.rold_id = ? WHERE employee.id = ?';
-        connection.query(query, 
-            [
-                {role_id: response.roleID},
-                {id: response.employeeID},
-            ], 
-            (err, res) => {
+        const query = `UPDATE employee SET employee.role_id = ${response.roleID} WHERE employee.id = ${response.employeeID}`;
+        connection.query(query, (err, res) => {
             if (err) throw err;
             console.log('Employee role_id has been updated!');
             viewEntity();
