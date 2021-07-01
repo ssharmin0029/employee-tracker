@@ -19,6 +19,7 @@ The Employee Tracker command-line application allows for non-developers to view 
 ## Screenshots
 ![alt text](assets/images/final-page-1.png)
 ![alt text](assets/images/final-page-2.png)
+![alt text](assets/images/final-page-3.png)
 
 
 ## User Story 
@@ -53,4 +54,4 @@ Bonus points if you're able to:
 
 
 ## Demo Link 
-[Employee Tracker Demo]()
+[Employee Tracker Demo](https://drive.google.com/file/d/1lODV-5bkLowq8oe0L7RIsw_-fo252FSE/view?usp=sharing)
