@@ -72,7 +72,7 @@ const viewEntity = () => {
                 viewDepartments();
                 break;
             case 'Employee Roles':
-                viewEmployeeRoles();
+                viewRoles();
                 break;
             case 'Employees':
                 viewEmployees();
@@ -97,8 +97,8 @@ const viewDepartments = () => {
     });
 };
 
-// View Employee Roles
-const viewEmployeeRoles = () => {
+// View Roles
+const viewRoles = () => {
     const query = 'SELECT * FROM role';
     connection.query(query, (err, data) => {
         if (err) throw err;
@@ -141,7 +141,7 @@ const addEntity = () => {
                 addDepartment();
                 break;
             case 'Employee Role':
-                addEmployeeRole();
+                addRole();
                 break;
             case 'Employee':
                 addEmployee();
@@ -168,13 +168,13 @@ const addDepartment = () => {
         connection.query(query, {name: response.departmentName}, (err, res) => {
                 if (err) throw err;
                 console.log(`Successfully department ${response.departmentName} has been added!`);
-                addEntity();
+                viewEntity();
             });
     });
 };
 
-// Add Employee Role(s)
-const addEmployeeRole = () => {
+// Add Role(s)
+const addRole = () => {
     inquirer.prompt([
         {
             name: 'title',
@@ -203,7 +203,7 @@ const addEmployeeRole = () => {
             (err, res) => {
                 if (err) throw err;
                 console.log(`Successfully role title ${response.title} has been added!`);
-                addEntity();
+                viewEntity();
             });
     });
 };
@@ -249,7 +249,7 @@ const addEmployee = () => {
             (err, res) => {
                 if (err) throw err;
                 console.log(`${response.firstName} ${response.lastName} successfully added as a new employee!`);
-                addEntity();
+                viewEntity();
             });
     });
 };
@@ -298,7 +298,7 @@ const deleteEntity = () => {
                 deleteDepartment();
                 break;
             case 'Employee Role':
-                deleteEmployeeRole();
+                deleteRole();
                 break;
             case 'Employee':
                 deleteEmployee();
@@ -314,7 +314,6 @@ const deleteEntity = () => {
 };
 
 // Delete Department(s)
-// Need account for ID and Update accordingly
 const deleteDepartment = () => {
     inquirer.prompt({
         name: 'departmentName',
@@ -326,14 +325,14 @@ const deleteDepartment = () => {
         connection.query(query, (err, res) => {
             if (err) throw err;
             console.log(`Successfully department ${response.departmentName} has been deleted!`);
-            deleteEntity();
+            viewEntity();
         });
     });
 };
 
-// Delete Employee Role(s)
+// Delete Role(s)
 // Need account for ID and Update accordingly
-const deleteEmployeeRole = () => {
+const deleteRole = () => {
     inquirer.prompt({
         name: 'title',
         type: 'input',
@@ -344,7 +343,7 @@ const deleteEmployeeRole = () => {
         connection.query(query, (err, res) => {
             if (err) throw err;
             console.log(`Successfully role ${response.title} has been deleted!`);
-            deleteEntity();
+            viewEntity();
         });
     });
 };
@@ -361,7 +360,7 @@ const deleteEmployee = () => {
         connection.query(query, (err, res) => {
             if (err) throw err;
             console.log(`Successfully employee_id ${response.employeeID} has been deleted!`);
-            deleteEntity();
+            viewEntity();
         });
     });
 };
